@@ -3,21 +3,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
 from models.metadata_model import Loocation, Department, Category, SubCategory
-from serializers.metadata_serializer import SubCategorySerializer, CategorySerializer, DepartmentSerializer, LocationSerializer
+from serializers import metadata_serializer
 
 
 class MetaDataCreateApiView(APIView):
     def post(self, request, *args, **kwargs):
-        '''
-        Create the Todo with given todo data
-        '''
+        """
+        Create the MetaData with given data
+        """
         data = {
             'location': request.data.get('location'),
             'department': request.data.get('department'),
             'category': request.data.get('category'),
             'sub category': request.data.get('sub category')
         }
-        serializer = TodoSerializer(data=data)
+        serializer = metadata_serializer.MetaDataCreateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -25,32 +25,82 @@ class MetaDataCreateApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MetaData
-    # add permission to check if user is authenticated
-    permission_classes = [permissions.IsAuthenticated]
+class MetaDataRetrieveByLocationView(APIView):
 
     # 1. List all
     def get(self, request, *args, **kwargs):
-        '''
+        """
         List all the todo items for given requested user
-        '''
-        todos = Todo.objects.filter(user = request.user.id)
-        serializer = TodoSerializer(todos, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        """
+        serializer = metadata_serializer.MetaDataRetrieveByLocationSerializer(request.location)
+        records = MetaData.objects.filter(location=request.data.get("location"))
+        return Response(records, status=status.HTTP_200_OK)
 
-    # 2. Create
-    def post(self, request, *args, **kwargs):
-        '''
-        Create the Todo with given todo data
-        '''
+
+class MetaDataRetrieveByDepartmentView(APIView):
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        """
+        List all the todo items for given requested user
+        """
+        serializer = metadata_serializer.MetaDataRetrieveByDepartmentSerializer(request.department)
+        records = MetaData.objects.filter(department=request.data.get("department"))
+        return Response(records, status=status.HTTP_200_OK)
+
+
+class MetaDataRetrieveByCategoryView(APIView):
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        """
+        List all the todo items for given requested user
+        """
+        serializer = metadata_serializer.MetaDataRetrieveByCategorySerializer(request.category)
+        records = MetaData.objects.filter(category=request.data.get("category"))
+        return Response(records, status=status.HTTP_200_OK)
+
+
+class MetaDataRetrieveBySubCategoryView(APIView):
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        """
+        List all the todo items for given requested user
+        """
+        serializer = metadata_serializer.MetaDataRetrieveBySubCategorySerializer(request.subCategory)
+        records = MetaData.objects.filter(sub_category=request.data.get("Sub Category"))
+        return Response(records, status=status.HTTP_200_OK)
+
+
+class MetaDataUpdateByLocationView(APIView):
+
+    # 1. List all
+    def put(self, request, *args, **kwargs):
+        """
+        List all the todo items for given requested user
+        """
         data = {
-            'task': request.data.get('task'),
-            'completed': request.data.get('completed'),
-            'user': request.user.id
+            'location': request.data.get('location'),
+            'department': request.data.get('department'),
+            'category': request.data.get('category'),
+            'sub category': request.data.get('sub category')
         }
-        serializer = TodoSerializer(data=data)
+        serializer = metadata_serializer.MetaDataUpdateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MetaDataDeleteByLocationView(APIView):
+
+    # 1. List all
+    def delete(self, request, *args, **kwargs):
+        """
+        List all the todo items for given requested user
+        """
+        serializer = metadata_serializer.MetaDataDeleteByLocationSerializer(request.data)
+        records = MetaData.objects.delete(location=request.data.get("location"))
+        return Response(records, status=status.HTTP_200_OK)
